@@ -1,0 +1,5 @@
+(defun greeting ()
+	(princ "Who are you? ")
+	(let ((name (read-line)))
+		(princ "Nice to meet you, ")
+		(princ name)))
