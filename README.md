@@ -67,10 +67,13 @@ What is that dot in the middle? The dot represents that this paired piece of dat
 
 So why does this allow us to join 2 lists together? Simply because we are able to have each pointer point to a list. But it goes deeper than that, why exactly do cons cells help us understand lists? Because lists are not actually *lists* in the sense that we see them, but just a linked series of cons cells that each contain a pointer to a piece of data, and then a pointer to the next cell.
 
-The actual underlying lying implementation looks alot like what we know as 'linked lists' in OOP languages. Consider the following Common Lisp code that defines a list of 3 numbers.
+The actual underlying lying implementation looks alot like what we know as 'linked lists' in OOP languages. Consider the following Common Lisp code that defines a list of 3 numbers in 2 different ways, and then uses `eq` to check their equality.
 
 ```
-'(3 7 13)
+(eq
+	'(3 7 13)
+	(cons 1 (cons 2 (cons 3 nil))))   ; => T (true)
+
 ```
 
 We can visualize the underlying implementation of this structure's cons cells in much the same way we would if it was made in java with a linked list.
@@ -81,7 +84,18 @@ Each cells contains 2 boxes, the first containing a pointer to the value, and th
 
 We can see how efficient cons is able to join lists and values by simply changing the pointers in cons cells. This is much more efficient than having to move an entire list in memory.
 
-It should be noted that from an equality standpoint, a consed together list is the same as a freshly declared list, because again, the underlying implementation is the same.
+So why did out cons cell of symbols turn out like `(RED . BLUE)`, and our list did not contain that dot. This is because lists are generally terminated with nil, and when we consed together 2 symbols the dot is telling us that the Common Lisp compiler found `BLUE` as a terminator rather than nil. 
+
+The dot `.` that was used to indicate the last unexpected element of the list, is essentially a separate notation for `cons` and can be used as such.
+
+```
+
+'(3 . (7 . (13 . nil)))
+
+```
+
+
+It should be reiterated that from an equality standpoint, a consed together list is the same as a freshly declared list, because again, the underlying implementation is the same.
 
 #####Numbers
 
@@ -419,7 +433,7 @@ All of this means that Common Lisp is a homoiconic language. Homoiconic means th
 ###Looping in Common Lisp
 
 
-###Higher Order Functions
+###Higher Order Functions and Lambda
 
 
 
