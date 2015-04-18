@@ -8,7 +8,8 @@ ________________________________
 
 ###Introduction
 
-In this paper I will explore the language Common Lisp, one of the oldest surviving dialects of the original Lisp programming language written by John McCarthy.
+In this paper I will explore the language Common Lisp, a standardized dialect of John McCarthy's original Lisp, which is one of the oldest programming languages still in use today. And the oldest still being actively developed with.
+
 
 Due to Lisp's unique feature of being able to define itself (i.e. write a compiler) in Lisp, there are many variations of the original language. Common Lisp was an attempt to standardize the language as defined in the ANSI standard document. There are many compilers/interpreters for Common Lisp, and the one in particular I have used for all of the code and testing in this document is CLISP. CLISP follows the standard put forth by the ANSI standard document, and includes a few extra features unique to the compiler.
 
@@ -219,41 +220,6 @@ As mentioned in the prior section the `eq` function is made specifically for sym
 As a general rule of thumb when learning, beginners are told that it is acceptable to use the `eq` funtion for symbols and `equal` for everything else.
 
 
-###Some Basic Functions and Special Operators
-
-Aside from the equality functions, there exists a few other mention worthy functions to make any further code snippets easier to understand. If any needed functions are explained elsewhere in the document I will skip over them here.
-
-
-* `+`     	- add 
-* `-`		- subtract
-* `*`		- multiply
-* `/` 		- divide 2 numbers, or if they are integers, return a ratio
-* `and` 	- logical AND
-* `or`		- logical OR
-* `expt` 	- exponential
-* `print`  - prints a string to the console, with a new line after
-* `prin1` - prints a string to the console without a new line after.
-* `princ` - prints a string to the console in a human readable format, as well as returning the value of the string.
-* `read` - read data from console input, evaluation possible
-* `read-line` - read a line of text from console input
-* `oddp`  	- returns true if a value is odd, nil otherwise.
-* `evenp` 	- returns true if a value is even, nil otherwise.
-* `defun` 	- defines a function
-* `defparameter` - defines a global variable, that can be redefined with `defparameter`
-* `defvar` 	- defines a global variables that cannot be redefined with `defvar`
-* `let` 		- defines local variable bindings
-* `flet` 		- defines local function bindings
-* `labels` 	- defines local functions, and allows those functions to call themselves or other functions declared within the same `labels` statement.
-* `progn` - evaluates multiple S-expressions in order.
-* `append` - join several lists into a larger one.
-* `apply`  - pass each variable in a list as a parameter to a function.
-* `member` - predicate to check the existance of an item in a list
-* `push`   - add an item to the front of a list
-
-
-
-It should be noted that functions that act as predicates are usually ended with the letter p. A predicate of course meaning that it returns true or false.
-
 ###Special functions for accessing List elements
 
 There are 2 main functions for accessing list elements.
@@ -428,15 +394,35 @@ What if we need to tell the compiler that a piece of code is specifically that, 
  `mapcar` takes 2 parameters, a function, and a list of values to apply that function to. It uses the function on every value in the list and returns a new list with the result. The above code works because we explicitly tell the compiler that the first parameter is code, and the second parameter is data. If we did not specify `sqrt` as a function, we would have received a `variable SQRT has no value` error. This is because we need to explicitly tell the compiler when we are naming a function instead of data, if it is not in that first position of the S-expression.
  
 All of this means that Common Lisp is a homoiconic language. Homoiconic means that the language uses the same data structures to store its code as its data.
- 
 
-###Looping in Common Lisp
+###Macros
+
+This fits well here I think
 
 
 ###Higher Order Functions and Lambda
 
+Lisp is the one of the original programming languages to use higher order functions, in fact we have already a function passed as data. In the above example of the previous section `mapcar` takes in 2 parameters, another function and a list.
 
+Consider another higher order function that is commonly used to filter data.
 
+```
+
+(remove-if #'evenp '(0 1 2 3 4 5))  ; => (1 3 5)
+
+```
+
+The `remove-if` function also takes in a function and a list as parameters. It checks each value of the list against the function (assumed to be a predicate), and returns a list of all the elements that had evaluated to true.
+
+Given Lisps blurred boundary and the ease of transferring from code to data, as defined in the previous sections, it is no surprise that higher order functions are well supported.
+
+Common Lisp also supports anonymous functions, which is unsurprising given it's roots in Lambda Calculus. The symbol for creating them is aptly named `lambda`:
+
+```
+
+(remove-if (lambda (x) (equal (mod x 2) 0)) '(0 1 2 3 4 5)) ; => (1 3 5)
+
+```
 
 
 
