@@ -164,7 +164,7 @@ It should be noted that symbols are case insensitive both in comparison and use,
 
 ```
 
-(eq 'csci 'CSCI)	; => T (true)
+(eq 'csci3055 'CSCI3055)	; => T (true)
 
 ```
 
@@ -190,13 +190,45 @@ The fact that any non empty list value evaluates to true has at least one obviou
 
 ```
 (let ((x 5))
-	(if x
-		x
+	(if x		; This line checks for x
+		x		; This line returns x
 		'nothing-here))
 		
 					; => 5
 
 ```
+
+
+###Assigning Values
+
+There are several methods of assigning data to symbols so that they can be retrieved at a later time.
+
+It is worth noting the use of `let` above, which is simply a form of aliasing a value to a symbol that allow for use of that symbol, as the value, within the body of the `let`. The simplest example being:
+
+```
+(let ((x 5)) x) 	; => 5
+
+```
+Although in the the spirit of functional style programming global data is discouraged, especially mutable data, there are a few constructs that you may need to create global data.
+
+```
+(defparameter *global-mutable* :this-will-change)
+
+(defvar *global-immutable* :this-will-not)
+
+(defparameter *global-mutable* :this-has-changed)
+
+(defvar *global-immutable* :this-has-not)
+
+*global-mutable*			; => :THIS-HAS-CHANGED
+
+*global-immutable* 			; => :THIS-WILL-NOT
+
+```
+
+Both `defvar` and `defparameter` allow us to declare variables in a global scope. The only difference is that the `defparameter` function will allow us to reassign values to globals. `defvar` will not throw an error if we attempt to reassign values to their assignments, but it will not succeed.
+
+It is worth rementioning that the convention of global values is it sourround their symbol with asterisks. This aids in reminding when anything outside the function will be affected by it's execution. Again, meaning that the function is not pure.
 
 ###Equality
 
@@ -218,6 +250,11 @@ Although I may have missed a few cases of each function, this is a fairly exhaus
 As mentioned in the prior section the `eq` function is made specifically for symbols and should be used as such. If you are certain the data that you are comparing will be symbols it is always best to use this function as it provides the best performance and most accurate results for symbols.
 
 As a general rule of thumb when learning, beginners are told that it is acceptable to use the `eq` function for symbols and `equal` for everything else.
+
+###Other Useful Functions
+
+A few other functions that can be used to check, manipulate, or assign
+
 
 
 ###Special functions for accessing List elements
@@ -449,6 +486,45 @@ The `princ` function prints it's arguments with the attempt of making it as frie
 
 #####Reading
 
+There are two main functions that we can used to read data from the console. When showing code snippets for either of these functions, I will show an 'Input:' and 'Output:' tag beside each command. This is because I want to show what I am providing as input when the reading functions ask for input, as well as the subsequent output that is produced.
+
+The first one, `read-line` is what we would use to read in user input for something like a simple text game. It returns the console input as a string, and we can use the `eval` function to show this. 
+
+```
+(eval (read-line)) ; Input: Hello    	; Output: "Hello"
+
+(eval (read-line)) ; Input: (+ 3 4)   	; Output: "(+ 3 4)"
+
+```
+
+Notice that even when we enter an S-expression, `read-line` will only ever evaluate it as a string. If we would like to be able to pass in text from the command line, and have Common Lisp evaluate it rather than just converting it to a string, we can use the `read` command.
+
+```
+(read) 				; Input: (+ 3 4)	; Output: (+ 3 4)
+
+(eval (read)) 		; Input: (+ 3 4)	; Output: 7
+
+```
+
+Notice that the first command is returned the way it was typed, this is due to the the data/code boundary that we talked about in the previous section. The difference being is that it is still a list of pure data and not just a string, so when we run the eval function, the code evaluates to 7 as expected.
+
+#####A Custom REPL
+
+As we know, REPL stands for read, evaluate, print, loop. We have already seen that three of these functions exist directly in Common Lisp, namely; `read`, `eval`, and `print`. And in fact Common Lisp, there exists a function `loop` that will allow us to repeat code. With all of these peices we are in fact able to build our own simple REPL for one of our programs, or even run it inside the CLISP REPL.
+
+```
+(loop (print (eval (read))))
+
+```
+
+This simple line of code is actually everything that is needed for a Common Lisp REPL, and can be used as such.
+
+This is dangerous and can be used negativly. If you are running a custom REPL inside a running program you have given anyone access to the REPL access to your source code and data. Since Lisp code can be written in Lisp code, as we have already seen with code/data and will see more of with macros, a user of your custom REPL can edit any of your source code while it is executing. Extra care must be taken with any Custom REPL to ensure that any user defined input is thoroughly 'cleaned' before it is used in the context of the program.
+
+Despite the risks, these REPL's can be extremely powerful, there is a wonderful story available in the 'Practical Common Lisp Book' by *Peter Seibel*, that tells of NASA scientists being able to fix buggy Lisp code with a REPL. The code and REPL that they were connecting to was 100 million miles away from Earth on the Deep Space 1 craft. The scientists were able to fix the bug before it became a problem, and without ever having to stop the execution of the code. The story can be read in the REPL chapter of their book:
+
+http://www.gigamonkeys.com/book/lather-rinse-repeat-a-tour-of-the-repl.html
+
 
 ###Functions, Higher Order Functions, and Lambda
 
@@ -500,7 +576,42 @@ The function `list-more` uses the &rest modifier in it's argument list to allow 
 
 #####Local Functions
 
-#Talk about flet and labels here
+Functions can be declared locally within another function, which binds their scope to the scope of whichever body they were declared in. There are 2 functions that allow us to accomplish this.
+
+`flet`, as the name implies, is the the 'let' statement built explicitly for functions:
+
+```
+(flet 
+	((say-hello () (print "Hello"))) 
+		(say-hello))					; => "Hello"
+		
+(say-hello)								; => Error EVAL: undefined function SAY-HELLO
+
+```
+
+Notice that trying to call `say-hello` outside of the body of `flet` results in an undefined function error. A limitation, or perhaps design choice, of `flet` is that multiple functions declared in the same `flet` statement do not have access to each other. Consider the following code:
+
+```
+
+(flet ((say-hello () (print "hey"))
+	   (say-it () (say-hello)))
+	(say-it))							; => Error EVAL: undefined function SAY-HELLO
+
+```
+
+Although the function `say-it` is still in the scope of the `flet` statement. It does not have access to it's sibling function `say-hello`. The result of `say-it` attempting to call `say-hello` is therefore the same as attempting to call either of them from outside the scope of the `flet`, an Undefined function error.
+
+The solution to this problem, or design feature depending on how you see it, it to use the function `labels`, which essentially acts the same as `flet`, but it allows for referencing other functions that were declared in the same scope. For example:
+
+```
+(labels ((say-hello () (print "hey"))
+		 (say-it () (say-hello)))
+	(say-it))							; => "hey"
+
+```
+
+Although this is a simple example, `labels` can allow for some powerful implementations, including a paired form of recursion.
+
 
 #####Higher Order Functions
 
