@@ -873,11 +873,206 @@ Each of these methods exist from the point that you defined the original with `d
 
 ###Generics
 
-Generics data structures and 
+Generic Data Structures
+
+Data structures in Common Lisp are by default, generic. As we recall, lists are the heterogeneous backbone of Lisp
+
+```
+
+(defparameter l
+	(list :hey 3 2.8 nil T "Caleb" '(1 2 3)))
+
+```
+
+We can fill arrays with most types of data as well.
+
+```
+(defparameter x (make-array 7))
+
+(setf (aref x 0) :hey)
+
+(setf (aref x 1) 3)
+
+(setf (aref x 2) 2.8)
+
+(setf (aref x 3) nil)
+
+(setf (aref x 4) T)
+
+(setf (aref x 5) "Caleb")
+
+(setf (aref x 6) '(1 2 3))
+
+```
+
+The same holds for associates lists and hash tables.
+
+Although there are specialized functions that only work on particular data structures, such as nth for accessing list elements, there are many functions that act on sequences. 
+
+Sequence is the name given to the union of all other data structures in Common Lisp, including; Lists, Vectors (which I didnt cover), Arrays, Hash-Tables, and even strings.
+
+A function that acts on a sequence is a function that is generic and works on any of Common Lisps data structures.
+
+For instance, the `list-length` function operates on lists to determine the length of a list, but it will not work on arrays. However there is a sequence function `length` that we can use on arrays or lists, or any other data structure for that matter:
+
+```
+(length l)	 ; => 7	
+
+(length x)	 ; => 7
+
+```
+
+The above 2 `length` calls checks the length of the array and list that were created above, both calls successfully return 7.
+
+Two other generic functions that we have already seen are setf and aref, which can be used for accessing and changing a value in any sequence, for example:
 
 
+```
+(defparameter my-name "Kaleb")
+
+(setf (aref my-name 0) #\C)
+
+my-name 	; => "Caleb"
+
+```
+
+There are many other sequence functions that we can use on any data structure. I will list a few:
+
+#####Functions for Searching
+
+* `find-if` - find first value that matches a predicate
+* `count` - check the frequency of an object in a sequence
+* `position` - check location of an item in a sequence
+* `some` - tells you if at least one item in a sequence obeys a predicate
+* `every` - Tells you if every value in a sequence obeys a predicate
+
+#####Functions for Iterating
+
+* `reduce` - applies function to every item of list while accumulating result to a single value
+* `map` - same as `mapcar` but generic
+* `subseq` - returns a subset of a sequence
+* `sort` - Sorts a sequence based on a specified comparator
+
+Why would we use any of the specialised functions like `list-length` or `mapcar` when we have generic functions that we do not need to worry about type? The simple answer is that these specialized functions are often optimized for the data structure to which they were developed.
+
+Because Lisp is dynamically typed and often generic, reflection is an important feature for determining which functions to execute on specific data types. Common Lisp provides several predicates that return true if a parameter of the specified type is passed as argument. For instance:
+
+```
+(numberp "Hello There") 		; => nil
+
+(numberp 7) 					; => T
+
+```
+
+The other type checking predicates that exist are:
+
+* `arrayp`
+* `characterp`
+* `consp`
+* `functionp`
+* `hash-tablep`
+* `listp`
+* `stringp`
+* `numberp`
+* `symbolp`
+
+There also exists a way of overriding functions to make them generic, via `defmethod`:
+
+```
+(defmethod get-length ((x string)) (length x))
+
+(defmethod get-length ((x list)) (list-length x))
+
+(get-length "Caleb") 	; => 5
+
+(get-length '(1 2 3)) 	; => 3
+
+```
+
+When a method defined with `defmethod` is passed an argument or arguments, it checks the type against any of its predefined instances, and executes the instance with the corresponding type if it exists. If it does not exist, such as attempting to call out `get-length` on a type of number, we would receive a 'no method is applicable' error.
+
+The use of `defmethod` with `defstruct` not only aids in implementing generics easily, but it also provides us with a basic object system.
+
+###Looping
+
+Just like `format`, when Lisp was originally created, there were several additions to the language that were incorporated into the ANSI standard thanks to their powerful applications.
+
+The `loop` construct, although not stemming from a pure lambda calculus background, allows for many interesting uses. COnsider a basic example:
+
+```
+(loop for i
+	  below 5
+	  do (princ i))
+
+	; => 01234
+
+```
+
+`loop` has several constructs that allow customization, there are three in our above example:
+
+* for - indicates the variable to be manipulatedo on each iteration. This variable defaults to 0
+* below - The above variable automatically increments on each iteration, and will halt when it reaches the value specified to by below
+* do - specifiec a command to be executed on each iteration of the loop
+
+What if we didnt not want `i` to start at 0, but instead specify a range of value. We could use the 'from' construct:
+
+```
+(loop for i
+	  from 5
+	  to 10
+	  sum i)
+
+	; => 45
+
+```
+
+The from construct allows us to specify an inital value for i. Instead of the 'do' condition that allows we were using to print, we introduce the 'sum' condition which collects a running total of the i values in each iteration and returns them at the end.
+
+There are other conditions such as:
+
+* below - break iteration when the value specified by below is reached
+* when - takes a predicate, allows execution of following code only when the predicate is satisfied.
+* return - usually preceeded by a when condition, allows early breaking of the loop and the specification of a value to be returned.
+* collect - creates a new list with each iteration of loop in which collect is called.
+
+Loops are incredibley powerful and allow for much more than whats shown here.
+
+###Macros
+
+Lisp is built on Macros, up until this point we have spoken of many 'functions' and 'additions' to lisp that are all in fact macros. To name a few, the `loop` construct we spoke of above is a macro that was introduced early on in Lisps lifecycle, the `format` we looked at in the Console section is another macro that was kept with the language.
+
+Keywords that we have been using such as `defun`, `defparameter`, `let`, and many others, are all just macros.
+
+Macros are simply a piece of lisp code, that evaluates to lisp code, however it is run at compile time instead of run time. This is a process known as macro-expansion. All Lisp dialects are very naturals at dealing with macros for the simple fact that the code and data are made out of are essentially the same thing under the hood.
+
+We can even define our own macros. Consider our let statements from before of the form:
+
+```
+
+(let ((x 2))
+	(princ x)) 	; => 2
+
+```
+
+The reason for the double brackets around the let is because we can define multiple assignments with let, and nested brackets are a great way to separate them, but perhaps we want a way to call let without writing all of those brackets. We can use the `defmacro` command to define our new macro.
 
 
+```
+(defmacro let1 (var val &body body)
+	`(let ((,var ,val))
+		,@body))
+
+```
+
+Our new let1 statement works like this:
+
+```
+(let1 x 2 
+	(princ x)) 	; => 2
+
+```
+
+There is many more examples I want to write and describe but it's like 11 at night on Sunday and this is due soon.
 
 
 
