@@ -523,7 +523,33 @@ This is dangerous and can be used negativly. If you are running a custom REPL in
 
 Despite the risks, these REPL's can be extremely powerful, there is a wonderful story available in the 'Practical Common Lisp Book' by *Peter Seibel*, that tells of NASA scientists being able to fix buggy Lisp code with a REPL. The code and REPL that they were connecting to was 100 million miles away from Earth on the Deep Space 1 craft. The scientists were able to fix the bug before it became a problem, and without ever having to stop the execution of the code. The story can be read in the REPL chapter of their book:
 
-http://www.gigamonkeys.com/book/lather-rinse-repeat-a-tour-of-the-repl.html
+`http://www.gigamonkeys.com/book/lather-rinse-repeat-a-tour-of-the-repl.html`
+
+#####Formatting
+
+`format` is a function used to customize text output much the same as 'printf' in C. Although it was an afterthought when Lisp was being developed, and not engrained in the original language, it is so powerful that is has since become part of the standard and is now baked into Common Lisp.
+
+A format expression has the form:
+
+```
+(format t "I make ~$ dollars per year" 0)
+
+; => I make 0.00 dollars per year
+
+```
+`format` takes 2 or more arguments, the first argument specifies a destination parameter, in this case `t` for 'terminal'. the second argument is a 'control string' that by defualt it printed to the console as is.
+
+The control string can also possess special directives called 'control sequences', which format any parameters specified after the control string and insert them into the control string with the spcified format. For instance, or control string has a single control sequence that specifies that the 0, provided after the control string, should be printed with 2 decimal places, a currency style formatting. We can have multiple control sequences in a single control string:
+
+```
+(format t "A ~s, can tell us alot about ~,10f" "circle" pi)
+
+```
+Our first control sequence `~s`, tells format to insert the value with quotes around it. The second control sequence `~,10f`, tells format that the value should be printed as a float with 10 digits after the decimal.
+
+Format is very powerful and has many other features, there are a few available on a cheatsheet at:
+
+`http://www.cliki.net/FORMAT%20cheat%20sheet`
 
 
 ###Functions, Higher Order Functions, and Lambda
@@ -537,6 +563,8 @@ Declaring functions in Common Lisp is easy and we have already seen several exam
 (defun function-name (parameters) (body-of-the-function))
 
 ```
+
+######Parameters
 
 This is a pretty straight forward example and the areas of a function declaration are named accordingly. We will however elaborate on `parameters` as there are several ways to specify an ambiguous number of arguments. Consider the following examples:
 
@@ -573,6 +601,50 @@ When we declared the function `list-parameters` we specified 4 arguments, 3 norm
 ```
 
 The function `list-more` uses the &rest modifier in it's argument list to allow for an arbitrary number of arguments greater than one. More specifically, `list-more` takes in 2 arguments, a single value 'a', and then a list called 'the-rest' that can hold an arbitrary number of values from 0 to infinity. The first 3 calls to `list-more` all respect these bounds and the third throws an error because it does not pass at least 1 argument.
+
+######Multiple return values
+
+We have already seen how multiple pieces of information can be passed with a single return value, namely checking for the existance of an item and then using the item. Again this works because everything in Common Lisp evaluates to true except for the empty list. However there are functions in list that return multiple values.
+
+Consider the `round` function:
+
+```
+(round 3.14)
+
+; => 3 ;
+; => 0.14
+
+```
+
+The `round` function returns 2 values. The first being the result of rounding the number, and the second being the value that was rounded off. 
+
+It is also possible to create user defined functions with multiple return values, with the `values` function.
+
+```
+(defun multi-val-return () (values 7 13))
+
+; => 7 ;
+; => 13
+
+```
+
+If either of these functions are used within an S-expression, where the parent function expects a single return parameter, then the first value, in both cases is the dominant value, and is the value that is used in the next evaluation. For instance:
+
+```
+(* 3 (round 3.14)) ; => 9
+
+```
+
+If one would like both values to be passed to the next level of the s expression, then we must use a `multiple-value-bind` to declare that 2 are being passed.
+
+```
+
+(multiple-value-bind (a b) (values 3 7) (* a b)) ; => 21
+
+```
+
+The first parameter to `multiple-value-bind` specifies a list of identifiers to match the the multiple returned values, the second is a call to the function that is returning multiple values, and the third is the body that defines the action to be taken on the values.
+
 
 #####Local Functions
 
@@ -647,6 +719,165 @@ This line performs that same action as the example above it, however instead of 
 ###Macros
 
 This fits well here I think
+
+###Other Data Structures
+
+#####Associated Lists
+
+Recall that when we cons together 2 elements, it creates a cons cell of 2 pointers, each point to they're respective data. Again this is essentially how lists are built, A group of cons'ed together cells with a NIL terminator in the final position. However if we cons together 2 single elements, without a NIL, it creates a tuple like structures.
+
+```
+(cons 'name 'caleb) ; => (NAME . CALEB)
+
+```
+
+An associated list, although not a strictly defined data structure in any underlying implementation, is a list of these cons pairs, that allow use to define and use a key-value pair like structure. For example:
+
+```
+(defparameter *ages* '((caleb . 25)
+					   (einstein . 136)
+					   (bob . 41)))
+
+(assoc 'caleb *ages*)	; => (CALEB . 25)
+
+```
+
+We can declare an associated list by simply creating a list of cons pairs. We can then look up any key value pair by using the `assoc` command on a key and the list.
+
+When we need to update a value in a list, for example, if it was bob's birthday yesterday, we simply push a new key value pair for bob:
+
+```
+(push '(bob . 42) *ages*)
+
+*ages*		; => ((BOB . 42) (CALEB . 25) (EINSTEIN . 136) (BOB . 41))
+
+(assoc 'bob *ages) ; => (BOB . 42)
+
+```
+
+When we `push` the new pair for bob onto the list, it simply adds it to the front of the list. It does not update the previous entry, which remains in the same position it was before. However, the `assoc` command looks for the first instance of the key that we specify, which will be our most recently pushed version of bob.
+
+This method of storing key value pairs has the benefit of maintaining a history of all changes made to the original list. It's downside is that it is not very efficient for anything other than the smallest of data sets. If performance is not an issue, then associated lists are a very workable data structure.
+
+
+#####Arrays
+
+A simple array can be declared using the `make-array` command.
+
+```
+
+(defparameter *my-array* (make-array 5))
+
+*my-array* 		; => (NIL NIL NIL NIL NIL)
+
+```
+
+The `make-array` command takes in a single parameter, which indicates the length of the array to be created. Notice the array is instantiated with all 'NIL' values.
+
+To access elements of array we use the `aref` command, and specify the index of the value we wish to access:
+
+```
+(aref *my-array* 1)
+
+NIL
+
+```
+
+This returns the second NIL in the list of 5 that exist in `*my-array*`. Arrays, just like most other languages, are indexed with the first element beginning at 0.
+
+`aref` is special, because it not only returns the index as a value, but also as a reference. This allows us access and change the value within the array in one swift motion using the `setf` command.
+
+```
+(setf (aref *my-array* 1) 'hello-world)
+
+(aref *my-array* 1)		; => HELLO-WORLD 
+
+```
+
+Notice that when we changed the value that is returned by `setf`, we not only change the value but we change the value as it exists in the original array.
+
+Arrays have the benefit over Lists of being random access. Recall that when we studied lists earlier, we saw that their underling implementation was a group of connected cons cells. Which means that accessing elements deeper in the list increases linearly with the number of elements.
+
+The downside to arrays is that because they need to be random access, they are required to be stored in memory together. They therefore require much more RAM for much larger arrays.
+
+#####Hash-Tables
+
+Hash-Tables can be thought of as having the same functionality as an associated list, but with the random access of an array.
+
+We can initiate a hash-table with the aptly named `make-hash-table` function:
+
+```
+
+(defparameter *my-table* (make-hash-table))
+
+(gethash 'test-key *my-table*) ; => NIL ; NIL
+
+```
+
+The 2 `NIL`'s listed as output are not an error. `gethash` is a function that returns 2 values. The first being the value corresponding to the requested key, or NIL if the value does not exist. The second being a value of either T or NIL (false), to indicate whether or not the key actually existed in the table. Given that we just created the table it is not surprising that there are no key-value pairs present. So lets create one:
+
+```
+
+(setf (gethash 'test-key *my-table) 123)
+
+(gethash 'test-key *my-table) 		; => 123 ; T
+
+```
+
+Notice in the first line, that we retrieve and set the value with the same reference based method that is performed with arrays. Namely, we retrieve and change a value, that also changes the original value and therefore the corresponding hash-table that it originally existed it.
+
+In the second line, when we attempt to retrieve the key again, we see that the value that was set is returned, as well as `T` to indicate the existance of the key.
+
+Hash-tables share similar pitfalls with arrays. When working with small data-sets the cost of allocating and working the hash-table outweigh any benefits of a constant access complexity. They also run the risk of hash collisions, which exist in any programming language that hashes key. The problem arises when 2 keys map to the same number when hashed, the problem does not render the hash-table useless, but it does slow execution.
+
+#####Structs
+
+A struct is a form of a data object that allows a programmer to group logical data together. The use of a struct is also unique in that the language will automatically create several methods for working with the object once it is created. For example:
+
+```
+(defstruct course
+		   name
+		   teacher
+		   time
+		   room)
+
+```
+
+The first argument of struct is the name of the struct, and any other arguments are known as slots, which indicate what data is to be stored there.
+
+Now to create a struct object of type 'course' we use a method that Common Lisp has defined for us called `make-course`. The general form of these autogenerated methods being `make-structname`.
+
+```
+(defparameter *my-first-course* 
+	(make-course :name "Programming Languages"
+				 :teacher "Ken Pu"
+				 :time 1400
+				 :room "UA2240"))
+
+```
+Common Lisp also automatically generates methods for accessing the parameters of the struct. In this example there were 4 access methods generated:
+
+```
+(course-name *my-first-course*)		; => "Programming Languages"
+
+(course-teacher *my-first-course*) 	; => "Ken Pu"
+
+(course-time *my-first-course*)		; => 1400
+
+(course-room *my-first-course*)		; => "UA2240"
+
+```
+
+Each of these methods exist from the point that you defined the original with `defstruct`, and each takes an instance of `defstruct` as an argument.
+
+
+###Generics
+
+Generics data structures and 
+
+
+
+
 
 
 
