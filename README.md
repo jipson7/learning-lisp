@@ -1074,6 +1074,116 @@ Our new let1 statement works like this:
 
 There is many more examples I want to write and describe but it's like 11 at night on Sunday and this is due soon.
 
+###Some sorting examples
+
+#####Bubble-Sort
+
+Here is an implementation of bubble sort, I have overloaded the function using the macro `defmethod` to use some functions specific to both arrays and lists.
+
+```
+(defmethod bubble-sort ((my-list array))
+	(do ((i (- (length my-list) 1) (- i 1)))
+		((= i 0))
+	(do ((j 0 (+ j 1)))
+		(( = j i))
+	(when (< (aref my-list i) (aref my-list j))
+	 	(let ((place-holder (aref my-list i)))
+			(setf (aref my-list i) (aref my-list j) (aref my-list j) place-holder)))))
+	my-list)
+	
+(defmethod bubble-sort ((my-list list))
+	(do ((i (- (list-length my-list) 1) (- i 1)))
+		((= i 0))
+	(do ((j 0 (+ j 1)))
+		(( = j i))
+	(when (< (nth i my-list) (nth j my-list))
+	 	(let ((place-holder (nth i my-list)))
+			(setf (nth i my-list) (nth j my-list) (nth j my-list) place-holder)))))
+	my-list)
+
+(bubble-sort '(2 3 1 5 4)) 	; => (1 2 3 4 5)
+
+(bubble-sort #(2 3 1 5 4)) 	; => #(1 2 3 4 5)
+	
+```
+
+#####Merge Sort
+
+```
+(defun merge-sort (my-list)
+	(if (or (equal (list-length list) 0) (equal (list-length) 1)) list
+		(merge-lists
+			(merge-sort (left-merge my-list))
+			(merge-sort (right-merge my-list)))))
+
+(defun right-merge (my-list)
+	(last my-list (ceiling (/ (list-length my-list) 2))))
+			
+(defun left-merge (my-list)
+	(ldiff my-list (right-merge my-list)))
+
+(defun merge-lists (left-half right-half)
+	(merge 'list left-half right-half #'<))
+
+```
+
+#####Quick Sort
+
+```
+(defun quick-sort (list)
+	(if (cdr list)
+		(flet ((pivot (test)
+		(remove (car list) list :test-not test)))
+        (nconc (quick-sort (pivot #'>)) (pivot #'=) (quick-sort (pivot #'<))))
+      list))
+
+```
+
+
+###Libraries and Community
+
+Common Lisp may not be as popular as some languages, but it has a long, coloured development history. The current community is smaller than some, but still very active.
+
+One can find a list of some of the libraries, sorted by use, at the CLIKI, the Common Lisp Wiki:
+
+```
+http://www.cliki.net/current%20recommended%20libraries
+
+```
+
+Some notable projects include:
+
+* Xelf - 2d game development
+* CommonQt - interface for QT Gui's
+* Sytes - Tool for simple websites
+* Ironclas - hash and security functions
+* Iparallel - library for parallel programming
+
+
+No language would be complete without a package management system. Quicklisp is such as system that, after installation, allowes the installation and loading of over 1300 libraries. It can be downloaded here:
+
+```
+http://www.quicklisp.org/
+
+```
+
+Aside from the websites listed above there are several notable places for common 'lispers' to interact.
+
+* lisp.space - Hacker News style website directed at Common Lisp and Functional Programming
+* common-lisp.net - the main website for common lisp, posts updates and news on Common Lisp Development
+
+On top of Lisp being a hireable skill at some of the worlds top tech companies, Paul Graham speaks in one of his famous essays about many companies using Lisp as their "Secret Weapon" when it comes to a needing competitive edge. One can say that there are many languages being used far more than lisp, but none quite as mysterious in the power it can lend with some mathematical knowledge. This project has been an absolute joy to write. Although it is a bit of a mismash of information, I have learnt more in writing this project than many others combined. Hope it was half as informative to read.
+
+###Resources
+
+* Practical Common Lisp - http://www.gigamonkeys.com/book/
+* Land of Lisp - http://landoflisp.com/
+* A brief guide to the common lisp object system - http://www.aiai.ed.ac.uk/~jeff/clos-guide.html
+* lisp space community - lisp.space 
+* Common Lisp Wiki - http://cliki.net/ 
+* Quick Lisp - http://www.quicklisp.org/
+* Lisp Subreddit - http://www.reddit.com/r/lisp/
+ 
 
 
 
