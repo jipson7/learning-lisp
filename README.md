@@ -251,11 +251,6 @@ As mentioned in the prior section the `eq` function is made specifically for sym
 
 As a general rule of thumb when learning, beginners are told that it is acceptable to use the `eq` function for symbols and `equal` for everything else.
 
-###Other Useful Functions
-
-A few other functions that can be used to check, manipulate, or assign
-
-
 
 ###Special functions for accessing List elements
 
@@ -389,7 +384,7 @@ Common Lisp has two types of code as seen by the compiler. There is 'code' and t
 
 ```
 
-As we know in Common Lisp, and functional programming in general, S-expressions are generally written in the form `(function data1 data2... etc.)`. Then why in this case was the first nested s-expression `(+ 1 2)` evaluated as a function, but the second just passed as a list of data? The answer is the single quotation in front of the second s-expression. This tells the compiler that the inner data is to be treated as exactly that, data. We can see that if we add the same single quote in front of the first nested s-expression, we will recieve different results:
+As we know in Common Lisp, and functional programming in general, S-expressions are generally written in the form `(function data1 data2... etc.)`. Then why in this case was the first nested s-expression `(+ 1 2)` evaluated as a function, but the second just passed as a list of data? The answer is the single quotation in front of the second s-expression. This tells the compiler that the inner data is to be treated as exactly that, data. We can see that if we add the same single quote in front of the first nested s-expression, we will receive different results:
 
 ```
 
@@ -510,7 +505,7 @@ Notice that the first command is returned the way it was typed, this is due to t
 
 #####A Custom REPL
 
-As we know, REPL stands for read, evaluate, print, loop. We have already seen that three of these functions exist directly in Common Lisp, namely; `read`, `eval`, and `print`. And in fact Common Lisp, there exists a function `loop` that will allow us to repeat code. With all of these peices we are in fact able to build our own simple REPL for one of our programs, or even run it inside the CLISP REPL.
+As we know, REPL stands for read, evaluate, print, loop. We have already seen that three of these functions exist directly in Common Lisp, namely; `read`, `eval`, and `print`. And in fact Common Lisp, there exists a function `loop` that will allow us to repeat code. With all of these pieces we are in fact able to build our own simple REPL for one of our programs, or even run it inside the CLISP REPL.
 
 ```
 (loop (print (eval (read))))
@@ -519,7 +514,7 @@ As we know, REPL stands for read, evaluate, print, loop. We have already seen th
 
 This simple line of code is actually everything that is needed for a Common Lisp REPL, and can be used as such.
 
-This is dangerous and can be used negativly. If you are running a custom REPL inside a running program you have given anyone access to the REPL access to your source code and data. Since Lisp code can be written in Lisp code, as we have already seen with code/data and will see more of with macros, a user of your custom REPL can edit any of your source code while it is executing. Extra care must be taken with any Custom REPL to ensure that any user defined input is thoroughly 'cleaned' before it is used in the context of the program.
+This is dangerous and can be used negatively. If you are running a custom REPL inside a running program you have given anyone access to the REPL access to your source code and data. Since Lisp code can be written in Lisp code, as we have already seen with code/data and will see more of with macros, a user of your custom REPL can edit any of your source code while it is executing. Extra care must be taken with any Custom REPL to ensure that any user defined input is thoroughly 'cleaned' before it is used in the context of the program.
 
 Despite the risks, these REPL's can be extremely powerful, there is a wonderful story available in the 'Practical Common Lisp Book' by *Peter Seibel*, that tells of NASA scientists being able to fix buggy Lisp code with a REPL. The code and REPL that they were connecting to was 100 million miles away from Earth on the Deep Space 1 craft. The scientists were able to fix the bug before it became a problem, and without ever having to stop the execution of the code. The story can be read in the REPL chapter of their book:
 
@@ -537,12 +532,12 @@ A format expression has the form:
 ; => I make 0.00 dollars per year
 
 ```
-`format` takes 2 or more arguments, the first argument specifies a destination parameter, in this case `t` for 'terminal'. the second argument is a 'control string' that by defualt it printed to the console as is.
+`format` takes 2 or more arguments, the first argument specifies a destination parameter, in this case `t` for 'terminal'. the second argument is a 'control string' that by default it printed to the console as is.
 
-The control string can also possess special directives called 'control sequences', which format any parameters specified after the control string and insert them into the control string with the spcified format. For instance, or control string has a single control sequence that specifies that the 0, provided after the control string, should be printed with 2 decimal places, a currency style formatting. We can have multiple control sequences in a single control string:
+The control string can also possess special directives called 'control sequences', which format any parameters specified after the control string and insert them into the control string with the specified format. For instance, or control string has a single control sequence that specifies that the 0, provided after the control string, should be printed with 2 decimal places, a currency style formatting. We can have multiple control sequences in a single control string:
 
 ```
-(format t "A ~s, can tell us alot about ~,10f" "circle" pi)
+(format t "A ~s, can tell us a lot about ~,10f" "circle" pi)
 
 ```
 Our first control sequence `~s`, tells format to insert the value with quotes around it. The second control sequence `~,10f`, tells format that the value should be printed as a float with 10 digits after the decimal.
@@ -604,7 +599,7 @@ The function `list-more` uses the &rest modifier in it's argument list to allow 
 
 ######Multiple return values
 
-We have already seen how multiple pieces of information can be passed with a single return value, namely checking for the existance of an item and then using the item. Again this works because everything in Common Lisp evaluates to true except for the empty list. However there are functions in list that return multiple values.
+We have already seen how multiple pieces of information can be passed with a single return value, namely checking for the existence of an item and then using the item. Again this works because everything in Common Lisp evaluates to true except for the empty list. However there are functions in list that return multiple values.
 
 Consider the `round` function:
 
@@ -826,7 +821,7 @@ The 2 `NIL`'s listed as output are not an error. `gethash` is a function that re
 
 Notice in the first line, that we retrieve and set the value with the same reference based method that is performed with arrays. Namely, we retrieve and change a value, that also changes the original value and therefore the corresponding hash-table that it originally existed it.
 
-In the second line, when we attempt to retrieve the key again, we see that the value that was set is returned, as well as `T` to indicate the existance of the key.
+In the second line, when we attempt to retrieve the key again, we see that the value that was set is returned, as well as `T` to indicate the existence of the key.
 
 Hash-tables share similar pitfalls with arrays. When working with small data-sets the cost of allocating and working the hash-table outweigh any benefits of a constant access complexity. They also run the risk of hash collisions, which exist in any programming language that hashes key. The problem arises when 2 keys map to the same number when hashed, the problem does not render the hash-table useless, but it does slow execution.
 
@@ -845,7 +840,7 @@ A struct is a form of a data object that allows a programmer to group logical da
 
 The first argument of struct is the name of the struct, and any other arguments are known as slots, which indicate what data is to be stored there.
 
-Now to create a struct object of type 'course' we use a method that Common Lisp has defined for us called `make-course`. The general form of these autogenerated methods being `make-structname`.
+Now to create a struct object of type 'course' we use a method that Common Lisp has defined for us called `make-course`. The general form of these auto-generated methods being `make-structname`.
 
 ```
 (defparameter *my-first-course* 
@@ -909,7 +904,7 @@ The same holds for associates lists and hash tables.
 
 Although there are specialized functions that only work on particular data structures, such as nth for accessing list elements, there are many functions that act on sequences. 
 
-Sequence is the name given to the union of all other data structures in Common Lisp, including; Lists, Vectors (which I didnt cover), Arrays, Hash-Tables, and even strings.
+Sequence is the name given to the union of all other data structures in Common Lisp, including; Lists, Vectors (which I didn't cover), Arrays, Hash-Tables, and even strings.
 
 A function that acts on a sequence is a function that is generic and works on any of Common Lisps data structures.
 
@@ -953,7 +948,7 @@ There are many other sequence functions that we can use on any data structure. I
 * `subseq` - returns a subset of a sequence
 * `sort` - Sorts a sequence based on a specified comparator
 
-Why would we use any of the specialised functions like `list-length` or `mapcar` when we have generic functions that we do not need to worry about type? The simple answer is that these specialized functions are often optimized for the data structure to which they were developed.
+Why would we use any of the specialized functions like `list-length` or `mapcar` when we have generic functions that we do not need to worry about type? The simple answer is that these specialized functions are often optimized for the data structure to which they were developed.
 
 Because Lisp is dynamically typed and often generic, reflection is an important feature for determining which functions to execute on specific data types. Common Lisp provides several predicates that return true if a parameter of the specified type is passed as argument. For instance:
 
@@ -997,7 +992,7 @@ The use of `defmethod` with `defstruct` not only aids in implementing generics e
 
 Just like `format`, when Lisp was originally created, there were several additions to the language that were incorporated into the ANSI standard thanks to their powerful applications.
 
-The `loop` construct, although not stemming from a pure lambda calculus background, allows for many interesting uses. COnsider a basic example:
+The `loop` construct, although not stemming from a pure lambda calculus background, allows for many interesting uses. Consider a basic example:
 
 ```
 (loop for i
@@ -1010,11 +1005,11 @@ The `loop` construct, although not stemming from a pure lambda calculus backgrou
 
 `loop` has several constructs that allow customization, there are three in our above example:
 
-* for - indicates the variable to be manipulatedo on each iteration. This variable defaults to 0
+* for - indicates the variable to be manipulated on each iteration. This variable defaults to 0
 * below - The above variable automatically increments on each iteration, and will halt when it reaches the value specified to by below
-* do - specifiec a command to be executed on each iteration of the loop
+* do - specify a command to be executed on each iteration of the loop
 
-What if we didnt not want `i` to start at 0, but instead specify a range of value. We could use the 'from' construct:
+What if we didn't not want `i` to start at 0, but instead specify a range of value. We could use the 'from' construct:
 
 ```
 (loop for i
@@ -1026,16 +1021,16 @@ What if we didnt not want `i` to start at 0, but instead specify a range of valu
 
 ```
 
-The from construct allows us to specify an inital value for i. Instead of the 'do' condition that allows we were using to print, we introduce the 'sum' condition which collects a running total of the i values in each iteration and returns them at the end.
+The from construct allows us to specify an initial value for i. Instead of the 'do' condition that allows we were using to print, we introduce the 'sum' condition which collects a running total of the i values in each iteration and returns them at the end.
 
 There are other conditions such as:
 
 * below - break iteration when the value specified by below is reached
 * when - takes a predicate, allows execution of following code only when the predicate is satisfied.
-* return - usually preceeded by a when condition, allows early breaking of the loop and the specification of a value to be returned.
+* return - usually preceded by a when condition, allows early breaking of the loop and the specification of a value to be returned.
 * collect - creates a new list with each iteration of loop in which collect is called.
 
-Loops are incredibley powerful and allow for much more than whats shown here.
+Loops are incredibly powerful and allow for much more than whats shown here.
 
 ###Macros
 
@@ -1160,7 +1155,7 @@ Some notable projects include:
 * Iparallel - library for parallel programming
 
 
-No language would be complete without a package management system. Quicklisp is such as system that, after installation, allowes the installation and loading of over 1300 libraries. It can be downloaded here:
+No language would be complete without a package management system. Quicklisp is such as system that, after installation, allows the installation and loading of over 1300 libraries. It can be downloaded here:
 
 ```
 http://www.quicklisp.org/
@@ -1172,7 +1167,7 @@ Aside from the websites listed above there are several notable places for common
 * lisp.space - Hacker News style website directed at Common Lisp and Functional Programming
 * common-lisp.net - the main website for common lisp, posts updates and news on Common Lisp Development
 
-On top of Lisp being a hireable skill at some of the worlds top tech companies, Paul Graham speaks in one of his famous essays about many companies using Lisp as their "Secret Weapon" when it comes to a needing competitive edge. One can say that there are many languages being used far more than lisp, but none quite as mysterious in the power it can lend with some mathematical knowledge. This project has been an absolute joy to write. Although it is a bit of a mismash of information, I have learnt more in writing this project than many others combined. Hope it was half as informative to read.
+On top of Lisp being a hireable skill at some of the worlds top tech companies, Paul Graham speaks in one of his famous essays about many companies using Lisp as their "Secret Weapon" when it comes to a needing competitive edge. One can say that there are many languages being used far more than lisp, but none quite as mysterious in the power it can lend with some mathematical knowledge. This project has been an absolute joy to write. Although it is a bit of a mishmash of information, I have learnt more in writing this project than many others combined. Hope it was half as informative to read.
 
 ###Resources
 
