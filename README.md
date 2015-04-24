@@ -1180,7 +1180,11 @@ On top of Lisp being a hireable skill at some of the worlds top tech companies, 
 * Lisp Subreddit - http://www.reddit.com/r/lisp/
  
 
-
+<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/github.min.css">
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
 
 
 
