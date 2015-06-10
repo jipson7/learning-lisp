@@ -1,8 +1,6 @@
 #Common Lisp
 
-###CSCI3055u
 
-####Caleb Phillips 100518555
 
 ________________________________
 
@@ -1167,7 +1165,7 @@ Aside from the websites listed above there are several notable places for common
 * lisp.space - Hacker News style website directed at Common Lisp and Functional Programming
 * common-lisp.net - the main website for common lisp, posts updates and news on Common Lisp Development
 
-On top of Lisp being a hireable skill at some of the worlds top tech companies, Paul Graham speaks in one of his famous essays about many companies using Lisp as their "Secret Weapon" when it comes to a needing competitive edge. One can say that there are many languages being used far more than lisp, but none quite as mysterious in the power it can lend with some mathematical knowledge. This project has been an absolute joy to write. Although it is a bit of a mishmash of information, I have learnt more in writing this project than many others combined. Hope it was half as informative to read.
+On top of Lisp being a hireable skill at some of the worlds top tech companies, Paul Graham speaks in one of his famous essays about many companies using Lisp as their "Secret Weapon" when it comes to a needing competitive edge. One can say that there are many languages being used far more than lisp, but none quite as mysterious in the power it can lend with some mathematical knowledge. 
 
 ###Resources
 
